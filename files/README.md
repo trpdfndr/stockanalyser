@@ -74,17 +74,64 @@ exempeldatasetet.
   exempeldatan: vinstbaserad payout kan vara >100 % samtidigt som
   kassaflödet fortfarande täcker utdelningen bekvämt).
 
-**Värdering** (`compute_valuation_metrics.m`)
-- Jämför Trailing P/E, Forward P/E, PEG, Price/Sales, Price/Book och
-  EV/EBITDA mot generiska riktvärden (se `config_benchmarks.m`).
-- PEG ≈ 1-heuristiken kommer fran Peter Lynch, *One Up On Wall Street*.
-- Multipel-riktvärdena är breda historiska marknadssnitt i stil med de
-  Aswath Damodaran (NYU Stern) publicerar löpande
-  (pages.stern.nyu.edu/~adamodar) - INTE branschspecifika. Byt ut dem om
-  du analyserar en specifik sektor.
-- Linjär regression (`polyfit`) på de historiska kolumnerna skattar om
-  multipeln expanderar eller krymper över tid, med R² som mått på hur
-  stark trenden är.
+**Värdering - dynamisk modell** (`compute_valuation_metrics.m`)
+
+Modellen jämför INTE längre en multipel mot bara ett fast generiskt tal.
+För varje mått (Trailing P/E, Forward P/E, PEG, P/S, P/B, EV/EBITDA)
+görs istället:
+
+1. **Datakvalitetskontroll.** Negativ/saknad vinst eller EBITDA, eller
+   ett orimligt högt P/E (> `bm.NotMeaningful.MaxPE`, default 200),
+   flaggas som "ej meningsfullt" istället för att tvingas in i en poäng
+   - sannolikt en engångseffekt/tillfälligt deprimerad vinst, inte ett
+   äkta värderingssignal.
+2. **Fundamental justering av det generiska riktvärdet.** Riktvärdet
+   skalas med tre mjukt dämpade (icke-linjära) faktorer:
+   `exp(k * atan((x - center) / spread))`
+   - *Tillväxt* (vinst- resp. omsättningstillväxt YoY) höjer/sänker
+     riktvärdet, men atan-funktionen mättar så att en extrem
+     enskild-kvartal-tillväxt inte får trissa upp "rimligt" P/E
+     obegränsat.
+   - *Kvalitet* (ROE) - lönsammare bolag tillåts en högre multipel.
+   - *Skuldsättning* (Debt/Equity) - högre skuldsättning sänker
+     riktvärdet (mer risk).
+   - *Marginal* (nettomarginal) - används specifikt för P/S, eftersom
+     samma omsättning är olika mycket värd beroende på lönsamhet.
+3. **Blandning med egen historik och (valfritt) peers.** Det
+   fundamentalt justerade riktvärdet blandas med bolagets egen
+   historiska median (fran de kvartal som finns i datan) och, om du
+   matar in det, en peer-/konkurrentmedian
+   (`data.PeerMedian.<mått>` - se `stock_data_template.m`).
+   Vikterna sätts i `bm.BlendWeights` och omfördelas automatiskt om en
+   källa saknas.
+4. **Icke-linjär poängsättning.** Avvikelsen fran det blandade
+   riktvärdet omvandlas till en poäng via en logistisk funktion på
+   log-avvikelsen (`50 - 40*tanh(log2(värde/riktvärde))`), som mättar
+   mot ~10/~90 istället för att träffa hårt 0/100 vid stora avvikelser.
+   PEG bedöms istället via ett bandat intervall (<1 attraktivt,
+   1,7-2,2 dyrt, osv. - Lynch-inspirerat), eftersom PEG redan är
+   tillväxtnormaliserat.
+5. **Gruppering (undviker dubbelräkning).** Trailing P/E, Forward P/E
+   och PEG mäter i grunden samma sak (vinstmultipeln), så de slås ihop
+   till en "Vinstvärdering"-grupp (Forward P/E + PEG, med Trailing P/E
+   som reserv om de saknas) innan gruppen vägs mot Omsättnings-,
+   Tillgångs- och Företagsvärdering. Vikterna sätts i
+   `bm.GroupWeights` och justeras dessutom efter `bm.SectorType`
+   ('generic' / 'asset_light' / 'asset_heavy' / 'financial') - t.ex.
+   väger P/B mindre för tillgångslätta bolag (mjukvara) och mer för
+   banker/fastighetsbolag.
+6. **Trend + pris- vs fundamentaldriven tolkning.** Linjär regression
+   (`polyfit`) på de historiska kolumnerna skattar om multipeln
+   expanderar eller krymper över tid (med R² som styrkemått). Detta
+   kompletteras med en grov heuristik som jämför multipelns totala
+   förändring med förändringen i dess "pris-drivare" (Market Cap för
+   P/E-familjen, Enterprise Value för EV/EBITDA) för att gissa om en
+   förändring är prisdriven eller beror på att vinsten/EBITDA:n
+   förändrats.
+
+De ursprungliga generiska riktvärdena (`bm.Generic.*`) finns kvar men är
+nu bara EN av flera referenspunkter (vikt `bm.BlendWeights.Generic`,
+default 30 %) - inte facit.
 
 **Finansiell hälsa** (`compute_financial_health.m`)
 - Inspirerad av Joseph Piotroskis F-Score (Piotroski, 2000, *Value
@@ -111,10 +158,25 @@ exempeldatasetet.
   "short squeeze"-potential - modellen avgör inte vilket).
 
 **Sammanvägning** (`score_and_recommend.m`)
-- Total poäng = 30 % Värdering + 25 % Hälsa + 25 % Säkerhet (100 -
-  Riskpoäng) + 20 % Momentum (pris vs 200-dagars glidande medelvärde).
+- Total poäng = 35 % Värdering + 30 % Hälsa + 25 % Säkerhet (100 -
+  Riskpoäng) + 10 % Momentum (pris vs 200-dagars glidande medelvärde).
+  Momentum väger medvetet lägre eftersom det säger relativt lite om ett
+  bolags långsiktiga fundamentala värde och kan se bra ut precis innan
+  marknaden vänder.
 - Vikterna är fritt valda avvägningar, inte hämtade fran nagon specifik
   studie - ändra dem i `score_and_recommend.m` om du vill vikta om.
+
+## Om ROIC
+
+Modellen använder ROE (och indirekt ROA, via DuPont-nedbrytningen i
+`compute_derived_fundamentals.m`) som kvalitetsmått i den fundamentala
+justeringen, inte ROIC. En korrekt ROIC-beräkning kräver EBIT,
+skattesats och investerat kapital, vilket Yahoos statistiksida inte ger
+direkt (bara EBITDA, inte EBIT/D&A-uppdelningen). Om du har dessa
+uppgifter fran annan källa kan du lägga till dem i din data-struct och
+utöka `evaluateMetric` i `compute_valuation_metrics.m` för att använda
+en riktig ROIC istället för ROE - strukturen (smoothAdj med
+center/spread/k) är densamma.
 
 ## Begränsningar (läs detta!)
 

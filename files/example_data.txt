@@ -1,74 +1,74 @@
 Valuation Measures
 Current	6/30/2026	3/31/2026	12/31/2025	6/30/2025	3/31/2025
-Market Cap	31.03B	24.40B	30.31B	26.81B	25.45B	19.47B
-Enterprise Value	31.19B	24.43B	30.25B	27.19B	25.45B	19.35B
-Trailing P/E	48.07	42.76	52.69	54.98	60.14	51.08
-Forward P/E	43.67	36.76	44.64	39.68	51.02	39.53
-PEG Ratio (5yr expected)	1.97	1.66	2.01	1.60	2.16	1.69
-Price/Sales	3.87	3.36	4.20	3.95	4.30	3.34
-Price/Book	6.78	6.19	7.66	6.96	7.32	5.97
-Enterprise Value/Revenue	3.92	3.29	4.19	4.06	4.33	3.29
-Enterprise Value/EBITDA	35.70	30.65	28.45	41.24	43.75	24.69
+Market Cap	19.08B	16.52B	15.65B	15.26B	13.65B	15.93B
+Enterprise Value	42.74B	40.18B	39.31B	12.19B	32.99B	35.26B
+Trailing P/E	10.84	12.21	9.66	8.53	5.45	5.61
+Forward P/E	7.27	7.50	8.16	6.53	6.31	6.33
+PEG Ratio (5yr expected)	--	--	--	--	--	--
+Price/Sales	0.43	0.36	0.34	0.34	0.30	0.33
+Price/Book	1.00	0.84	0.80	0.85	0.74	0.88
+Enterprise Value/Revenue	0.97	0.92	0.89	0.27	0.71	0.74
+Enterprise Value/EBITDA	6.85	7.20	6.82	1.94	4.61	4.76
 
 Financial Highlights
 Fiscal Year
 Fiscal Year Ends	12/31/2025
 Most Recent Quarter (mrq)	6/30/2026
 Profitability
-Profit Margin	8.05%
-Operating Margin (ttm)	0.00%
+Profit Margin	4.00%
+Operating Margin (ttm)	6.56%
 Management Effectiveness
-Return on Assets (ttm)	4.63%
-Return on Equity (ttm)	15.86%
+Return on Assets (ttm)	2.16%
+Return on Equity (ttm)	9.67%
 Income Statement
-Revenue (ttm)	--
-Revenue Per Share (ttm)	--
-Quarterly Revenue Growth (yoy)	28.60%
-Gross Profit (ttm)	--
-EBITDA	10.83B
-Net Income Avi to Common (ttm)	--
-Diluted EPS (ttm)	1.19
-Quarterly Earnings Growth (yoy)	40.10%
+Revenue (ttm)	44.14B
+Revenue Per Share (ttm)	88.28
+Quarterly Revenue Growth (yoy)	4.10%
+Gross Profit (ttm)	7.64B
+EBITDA	4.76B
+Net Income Avi to Common (ttm)	1.77B
+Diluted EPS (ttm)	3.54
+Quarterly Earnings Growth (yoy)	187.80%
 Balance Sheet
-Total Cash (mrq)	--
-Total Cash Per Share (mrq)	--
-Total Debt (mrq)	--
-Total Debt/Equity (mrq)	28.58%
-Current Ratio (mrq)	1.23
-Book Value Per Share (mrq)	76.12
+Total Cash (mrq)	2.4B
+Total Cash Per Share (mrq)	4.81
+Total Debt (mrq)	28.7B
+Total Debt/Equity (mrq)	149.39%
+Current Ratio (mrq)	0.99
+Book Value Per Share (mrq)	38.41
 Cash Flow Statement
-Operating Cash Flow (ttm)	--
-Levered Free Cash Flow (ttm)	7.51B
+Operating Cash Flow (ttm)	691M
+Levered Free Cash Flow (ttm)	780.5M
 Trading Information
 Stock Price History
-Beta (5Y Monthly)	0.03
-52 Week Change 3	18.05%
-S&P 500 52-Week Change 3	18.45%
-52 Week High 3	69.67
-52 Week Low 3	40.56
-50-Day Moving Average 3	53.02
-200-Day Moving Average 3	54.25
+Beta (5Y Monthly)	1.38
+52 Week Change 3	20.46%
+S&P 500 52-Week Change 3	19.67%
+52 Week High 3	41.26
+52 Week Low 3	26.08
+50-Day Moving Average 3	36.40
+200-Day Moving Average 3	33.17
 Share Statistics
-Avg Vol (3 month) 3	2.4k
-Avg Vol (10 day) 3	2.58k
-Shares Outstanding 5	529.11M
-Implied Shares Outstanding 6	538.65M
-Float 8	373.47M
-% Held by Insiders 1	0.88%
-% Held by Institutions 1	70.53%
+Avg Vol (3 month) 3	345
+Avg Vol (10 day) 3	70
+Shares Outstanding 5	500M
+Implied Shares Outstanding 6	500M
+Float 8	51.4M
+% Held by Insiders 1	87.53%
+% Held by Institutions 1	6.61%
 Shares Short 4	--
 Short Ratio 4	--
 Short % of Float 4	--
 Short % of Shares Outstanding 4	--
 Shares Short (prior month ) 4	--
 Dividends & Splits
-Forward Annual Dividend Rate 4	0.23
-Forward Annual Dividend Yield 4	0.40%
-Trailing Annual Dividend Rate 3	0.00
-Trailing Annual Dividend Yield 3	0.00%
-5 Year Average Dividend Yield 4	0.91
-Payout Ratio 4	16.74%
+Forward Annual Dividend Rate 4	0.93
+Forward Annual Dividend Yield 4	2.78%
+Trailing Annual Dividend Rate 3	0.93
+Trailing Annual Dividend Yield 3	2.42%
+5 Year Average Dividend Yield 4	3.68
+Payout Ratio 4	0.00%
 Dividend Date 3	--
-Ex-Dividend Date 4	10/5/2026
-Last Split Factor 2	4:1
-Last Split Date 3	5/7/2024
+Ex-Dividend Date 4	6/17/2026
+Last Split Factor 2	--
+Last Split Date 3	--

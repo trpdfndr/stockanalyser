@@ -72,4 +72,17 @@ data.TrailingDividendYield     = 3.46;
 data.AvgDividendYield5Y        = 2.72;
 data.PayoutRatio               = 226.61;
 
+% --- (Valfritt) Peer-/konkurrentmedian ----------------------------------
+% Om du har jämförbara bolags multiplar kan du mata in medianen här -
+% då vägs den in i det dynamiska riktvärdet i COMPUTE_VALUATION_METRICS.
+% Avkommentera och fyll i de mått du har data för (övriga behöver inte
+% anges - vikten omfördelas automatiskt om ett fält saknas):
+%
+% data.PeerMedian.TrailingPE   = 35;
+% data.PeerMedian.ForwardPE    = 22;
+% data.PeerMedian.PEGRatio     = 1.1;
+% data.PeerMedian.PriceToSales = 6;
+% data.PeerMedian.PriceToBook  = 10;
+% data.PeerMedian.EV_EBITDA    = 18;
+
 end

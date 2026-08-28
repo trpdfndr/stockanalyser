@@ -26,20 +26,43 @@ fprintf('Kapitalomsättningshastighet (Revenue/Assets, DuPont): %.2fx\n', derive
 fprintf('Utdelningstäckning - fritt kassaflöde: %.2fx  |  vinstbaserad: %.2fx\n', ...
     derived.DividendCoverageFCF, derived.DividendCoverageNI);
 
-fprintf('\n--- 2. VÄRDERING ---\n');
-fields = fieldnames(val.Comparison);
-for i = 1:numel(fields)
-    c = val.Comparison.(fields{i});
-    fprintf('%-14s: %8.2f  (riktvärde %6.2f, avvikelse %+6.1f%%, poäng %5.1f/100)\n', ...
-        fields{i}, c.value, c.benchmark, c.pctDiff, c.score);
+fprintf('\n--- 2. VÄRDERING (dynamisk, fundamentalt justerad) ---\n');
+fprintf('Sektortyp: %s   (styr vikten för P/B och EV/EBITDA - se config_benchmarks.m)\n', val.SectorType);
+if val.PeerDataUsed
+    fprintf('Peer-/konkurrentdata: användes i blandningen där tillgängligt.\n');
+else
+    fprintf('Peer-/konkurrentdata: ej tillhandahållet (lägg till data.PeerMedian.<mått> för att aktivera).\n');
 end
-fprintf('Sammanvägd värderingspoäng: %.1f/100  (100 = billig, 0 = dyr, mot generiska riktvärden)\n', val.ValuationScore);
+fprintf('\n');
 
-fprintf('\nTrend över tid (multipel-expansion/kompression, %d perioder):\n', numel(data.PeriodLabels));
+names = {'TrailingPE','ForwardPE','PEGRatio','PriceToSales','PriceToBook','EV_EBITDA'};
+for i = 1:numel(names)
+    d = val.Details.(names{i});
+    if ~d.meaningful
+        fprintf('%-14s: %8.2f   [EJ MENINGSFULLT - %s]\n', names{i}, d.value, d.reason);
+        continue;
+    end
+    fprintf('%-14s: %8.2f  ->  dynamiskt riktvärde %7.2f  (avvikelse %+6.1f%%, poäng %5.1f/100)\n', ...
+        names{i}, d.value, d.blendedBenchmark, d.pctDiffVsBlended, d.score);
+    fprintf('%16s justeringar: tillväxt x%.2f | kvalitet(ROE) x%.2f | skuldsättning x%.2f | marginal x%.2f | historiskt median: %s | peer-median: %s\n', ...
+        ' ', d.adjustments.growth, d.adjustments.quality, d.adjustments.leverage, d.adjustments.margin, ...
+        formatNaNOrNum(d.historicalMedian), formatNaNOrNum(d.peerMedian));
+end
+
+fprintf('\nGruppoäng (relaterade mått vägs ihop för att undvika dubbelräkning):\n');
+fprintf('  Vinstvärdering   (P/E-familjen, vikt %4.1f%%): %s/100  %s\n', ...
+    val.Groups.Weights.Earnings*100, formatNaNOrNum(val.Groups.Earnings), val.Groups.EarningsNote);
+fprintf('  Omsättningsvärd. (P/S,         vikt %4.1f%%): %s/100\n', val.Groups.Weights.Sales*100, formatNaNOrNum(val.Groups.Sales));
+fprintf('  Tillgångsvärd.   (P/B,         vikt %4.1f%%): %s/100\n', val.Groups.Weights.Asset*100, formatNaNOrNum(val.Groups.Asset));
+fprintf('  Företagsvärd.    (EV/EBITDA,   vikt %4.1f%%): %s/100\n', val.Groups.Weights.Enterprise*100, formatNaNOrNum(val.Groups.Enterprise));
+fprintf('Sammanvägd värderingspoäng: %.1f/100  (100 = billig, 0 = dyr, relativt dynamiskt riktvärde)\n', val.ValuationScore);
+
+fprintf('\nTrend över tid (regression) samt pris- vs fundamentaldriven tolkning:\n');
 tfNames = fieldnames(val.Trends);
 for i = 1:numel(tfNames)
     t = val.Trends.(tfNames{i});
     fprintf('  %-14s: %s (R^2=%.2f)\n', tfNames{i}, t.direction, t.r2);
+    fprintf('  %14s  -> %s\n', '', t.driverNote);
 end
 
 fprintf('\n--- 3. FINANSIELL HÄLSA (Piotroski-inspirerad delpoäng) ---\n');
@@ -83,10 +106,11 @@ fprintf('REKOMMENDATION (heuristisk modell): %s\n', result.Recommendation);
 fprintf('RISKNIVÅ: %s\n', result.RiskLevel);
 fprintf('=====================================================\n');
 fprintf('OBS: Detta är en kvantitativ heuristik byggd på vedertagna\n');
-fprintf('tumregler (Graham, Lynch, Piotroski, CAPM/Sharpe, Damodaran-\n');
-fprintf('multiplar). Det är INTE finansiell rådgivning och bör INTE\n');
-fprintf('ensamt ligga till grund for investeringsbeslut. Modellen saknar\n');
-fprintf('kontext om bransch, konkurrens, ledning, makroekonomi m.m.\n');
+fprintf('tumregler och en dynamisk, fundamentalt justerad värderings-\n');
+fprintf('modell (Graham, Lynch, Piotroski, CAPM/Sharpe, Damodaran).\n');
+fprintf('Det är INTE finansiell rådgivning och bör INTE ensamt ligga\n');
+fprintf('till grund for investeringsbeslut. Modellen saknar kontext om\n');
+fprintf('konkurrenter (om ej manuellt tillagt), ledning, makroekonomi m.m.\n');
 fprintf('=====================================================\n\n');
 
 plotValuationTrends(data);
@@ -136,6 +160,15 @@ elseif abs(v) >= 1e9
     s = sprintf('%.2fB', v/1e9);
 elseif abs(v) >= 1e6
     s = sprintf('%.2fM', v/1e6);
+else
+    s = sprintf('%.2f', v);
+end
+end
+
+
+function s = formatNaNOrNum(v)
+if isnan(v)
+    s = 'N/A';
 else
     s = sprintf('%.2f', v);
 end

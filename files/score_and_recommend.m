@@ -12,7 +12,10 @@ else
 end
 result.MomentumScore = momentum;
 
-weights = struct('valuation',0.30, 'health',0.25, 'safety',0.25, 'momentum',0.20);
+% Momentum säger relativt lite om ett bolags långsiktiga fundamentala
+% värde och kan se bra ut precis innan marknaden vänder - därför väger
+% det lägre här än värdering/hälsa/säkerhet, som är mer fundamentala.
+weights = struct('valuation',0.35, 'health',0.30, 'safety',0.25, 'momentum',0.10);
 result.Weights = weights;
 
 composite = weights.valuation * val.ValuationScore + ...
