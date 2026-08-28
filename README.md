@@ -1,2 +1,2 @@
-# stockanalyser
-analyses stocks in yahoo where you copy the balance sheets to get the current information about the stock you want to analyse
+# Stock Analyzer
+Analyzes stocks using Yahoo Finance by importing balance sheets and other up-to-date stock data. The project is still under development, with more features and updates planned for the future.
